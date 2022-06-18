@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+    order-service:
+        image: webdevops/php:8.0
+        ports:
+            - 8082:80
+        working_dir: /app
+        environment: 
+            - WEB_DOCUMENT_ROOT=/app/public
+            - PHP_MEMORY_LIMIT=512M
+            - PHP_MAX_EXECUTION_TIME=30
+            - PHP_POST_MAX_SIZE=20M
+            - PHP_UPLOAD_MAX_FILESIZE=20M
+        volumes:
+            - './app:/app'
+    order_DB:
+        image: postgres:11.12
+        environment:
+            POSTGRES_DB: order
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+        ports:
+            - 8320:5432
+        volumes:
+            - order-db-data:/var/lib/postgresql/data/
+        command: ["postgres", "-c", "logging_collector=on", "-c", "log_destination=stderr", "-c", "max_connections=10000"]
+    order_test_DB:
+        image: postgres:11.12
+        environment:
+            POSTGRES_DB: order
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+        ports:
+            - 8321:5432
+        volumes:
+            - order-test-db-data:/var/lib/postgresql/data/
+        command: ["postgres", "-c", "logging_collector=on", "-c", "log_destination=stderr", "-c", "max_connections=10000"]
+volumes:
+    order-db-data:
+    order-test-db-data:
